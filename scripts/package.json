@@ -1,0 +1,14 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "packageManager": "yarn@3.2.2",
+  "dependencies": {
+    "fs-extra": "^10.1.0",
+    "gh-pages": "^4.0.0",
+    "upath": "^2.0.1",
+    "yaml": "^2.1.1",
+    "zx": "^7.0.7"
+  }
+}
