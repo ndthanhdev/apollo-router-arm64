@@ -65,7 +65,7 @@ import (
         input: deps.output
         command: {
             name: "zx",
-            args: ["./scripts/src/\(_name).mjs"] + _args
+            args: ["./scripts/\(_name).mjs"] + _args
         }
     }
 

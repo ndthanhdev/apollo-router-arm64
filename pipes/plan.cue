@@ -18,7 +18,7 @@ dagger.#Plan & {
 				]
 			}
 
-			// "../../out": write: contents: actions.releaseExp.output
+			"../out": write: contents: actions.binary.output
 		}
 		// env: {
 		// 	REGISTRY_USERNAME: string
@@ -29,10 +29,10 @@ dagger.#Plan & {
     _rootDir: client.filesystem."../"
 
     actions: {
-        build: acts.#RunScript & {
+        build: acts.#BuildVersion & {
             workdir: _rootDir.read.contents
 
-            name: "build"
+            version: "0.12.0"
         }
     }
 }
