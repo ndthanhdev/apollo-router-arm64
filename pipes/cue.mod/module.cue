@@ -1,1 +1,1 @@
-module: ""
+module: "pipes.local"

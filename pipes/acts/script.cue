@@ -2,8 +2,9 @@ package acts
 
 
 import (
-    "universe.dagger.io/dagger/alpine"
-    "dagger.io/core"
+    "universe.dagger.io/alpine"
+    "universe.dagger.io/docker"
+    "dagger.io/dagger"
 )
 
 
@@ -11,26 +12,48 @@ import (
 	workdir: dagger.#FS
 	_workdir: workdir
 
-    _pkgs: alpine.#Build & {
-        packages: {
-            git: {}
-            nodejs: {}
-            bash: {}
-        }
+    _image: docker.#Build & {
+        steps: [
+            alpine.#Build & {
+                version: "3.16"
+                packages: {
+                    git: {}
+                    nodejs: {}
+                    npm: {}
+                    bash: {}
+                    yarn: {}
+                }
+            },
+            docker.#Copy & {
+                contents: _workdir
+            },
+            docker.#Run & {
+                command: {
+                    name: "npm"
+                    args: ["install", "-g", "zx"]
+                }
+            },
+            docker.#Run & {
+                workdir: "./scripts"
+                command: {
+                    name: "yarn"
+                    args: ["install"]
+                }
+            }
+        ]
     }
 
-    _cp: core.#Copy & {
-        src: _workdir
-        dst: _workdir
-    }
-
-    _zx: docker.#Run & {
-
-    }
+    output: _image.output
 }
 
 #RunScript: {
-    deps: #ScriptDeps & {}
+
+    workdir: dagger.#FS
+    _workdir: workdir
+
+    deps: #ScriptDeps & {
+        workdir: _workdir
+    }
 
     name: string
     _name: name
@@ -38,9 +61,13 @@ import (
     args: [...string]
     _args: args
 
-    docker.#Run & {
-        workdir: "/src"
-        name: "zx",
-        args: ["./misc/scripts/src/\(_name).mjs"] + _args
+    _run: docker.#Run & {
+        input: deps.output
+        command: {
+            name: "zx",
+            args: ["./scripts/src/\(_name).mjs"] + _args
+        }
     }
+
+    output: _run.output
 }
