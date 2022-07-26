@@ -47,26 +47,16 @@ import (
 }
 
 #RunScript: {
-    input: docker.#Image
-    _input: input
-
     name: string
     _name: name
 
     args: [...string]
     _args: args
 
-    env: [string]: string | dagger.#Secret
-    _env: env
-
-    _run: docker.#Run & {
-        input: _input
+    docker.#Run & {
         command: {
             name: "zx",
             args: ["./scripts/\(_name).mjs"] + _args
         }
-        env: _env
     }
-
-    output: _run.output
 }

@@ -17,7 +17,11 @@ export class Paths {
 		return upath.resolve(Paths.Out, `v${version}`);
 	}
 
-	static get MissingTagsPath() {
-		return upath.resolve(Paths.Out, "missing-tags.yaml");
+	static get MetaPath() {
+		return upath.resolve(Paths.Out, "meta.yaml");
+	}
+
+	static get ScriptsDir() {
+		return upath.resolve(Paths.WorkDir, "scripts");
 	}
 }

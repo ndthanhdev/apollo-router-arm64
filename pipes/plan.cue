@@ -22,8 +22,8 @@ dagger.#Plan & {
 		}
 		env: {
 			TARGET_VERSION?: string
-			// REGISTRY_USERNAME: string
-			REGISTRY_PASSWORD: dagger.#Secret
+			GH_USERNAME: string
+			GH_TOKEN: dagger.#Secret
 		}
 	}
 
@@ -41,11 +41,20 @@ dagger.#Plan & {
 		publishBin: acts.#PublishBin & {
 			workdir: _rootDir.read.contents
 			version: _version
-			env: {
-				TARGET_VERSION: client.env.TARGET_VERSION
-				REGISTRY_USERNAME: client.env.REGISTRY_USERNAME
-				REGISTRY_PASSWORD: client.env.REGISTRY_PASSWORD
-			}
+			ghToken: client.env.GH_TOKEN
+		}
+
+		publishImage: acts.#PublishImage & {
+			workdir: _rootDir.read.contents
+			version: _version
+			ghUsername: client.env.GH_USERNAME
+			ghToken: client.env.GH_TOKEN
+		}
+
+		daily: {
+			// find version to build
+			// publish bin
+			// publish image
 		}
     }
 }

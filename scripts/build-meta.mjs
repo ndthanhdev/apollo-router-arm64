@@ -2,6 +2,8 @@
 
 import { $, cd } from "zx";
 
+import Semver from "semver";
+
 import Yaml from "yaml";
 
 import fs from "fs-extra";
@@ -21,14 +23,22 @@ const armTags = await getTags(ArmRepoUrl);
 
 console.log({ armTags });
 
-const missingTags = routerTags.filter((tag) => !armTags.includes(tag));
+let missingVers = routerTags.filter((tag) => !armTags.includes(tag));
 
-console.log({ missingTags });
+missingVers = missingVers
+	.filter((tag) => Semver.valid(tag))
+	.filter((tag) => Semver.satisfies(tag, ">=0.9.0"));
+
+missingVers = Semver.rsort(missingVers);
+
+const nextBuild = missingVers[0];
+
+const fContent = Yaml.stringify({ missingVers, nextBuild });
+
+console.log(fContent);
 
 await fs.mkdirp(Paths.Out);
 
-const value = Yaml.stringify({ value: missingTags });
-
-await fs.writeFile(Paths.MissingTagsPath, value, {
+await fs.writeFile(Paths.MetaPath, fContent, {
 	flag: "w+",
 });

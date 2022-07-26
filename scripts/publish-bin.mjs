@@ -9,24 +9,27 @@ if (!TARGET_VERSION) {
 	throw new Error("TARGET_VERSION is not defined");
 }
 
-const REGISTRY_PASSWORD = process.env.REGISTRY_PASSWORD;
+cd(Paths.ScriptsDir);
+
+const GH_TOKEN = process.env.GH_TOKEN;
 
 const USER = "Bot <ndthanhdev@outlook.com>";
 const flags = [
 	"--no-history",
 
 	"--repo",
-	`git@${REGISTRY_PASSWORD}@github.com:ndthanhdev/apollo-router-arm64.git`,
-
-	"--silent",
+	`https://${GH_TOKEN}@github.com/ndthanhdev/apollo-router-arm64.git`,
 
 	"--tag",
 	`v${TARGET_VERSION}`,
 
+	"--message",
+	`Publish v${TARGET_VERSION}`,
+
 	"--user",
 	USER,
 
-	"--src",
+	"--dist",
 	`${Paths.getBinFolder(TARGET_VERSION)}`,
 ];
 

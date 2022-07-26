@@ -24,6 +24,10 @@ import (
         buildArg: {
             router_version: version
         }
+
+        label: {
+
+        }
     }
 
     output: _image.output
@@ -69,8 +73,7 @@ import (
     version: string
     _version: version
 
-    env: [string]: string | dagger.#Secret
-    _env: env
+    ghToken: dagger.#Secret
 
     _image: #BuildImage & {
         version: _version
@@ -85,12 +88,42 @@ import (
         input: _scriptDeps.output
         contents: _image.output.rootfs
         source: "/router"
-        dest: "/bin"
+        dest: "/out/v\(_version)"
     }
 
     _publish: #RunScript & {
         input: _copyBin.output
         name: "publish-bin"
-        env: _env
+        env: {
+            TARGET_VERSION: _version,
+            GH_TOKEN: ghToken
+        }
+    }
+}
+
+#PublishImage: {
+    workdir: dagger.#FS
+    _workdir: workdir
+
+    version: string
+    _version: version
+
+    ghUsername: string
+    ghToken: dagger.#Secret
+
+    _image: #BuildImage & {
+        version: _version
+        workdir: _workdir
+    }
+
+    _push: docker.#Push & {
+        image: _image.output
+
+        dest: "ghcr.io/ndthanhdev/apollo-router-arm64:v\(_version)"
+
+        auth: {
+            username: ghUsername
+            secret: ghToken
+        }
     }
 }
