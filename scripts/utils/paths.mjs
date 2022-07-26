@@ -13,6 +13,10 @@ export class Paths {
 		return upath.resolve(Paths.WorkDir, "out");
 	}
 
+	static getBinFolder(version) {
+		return upath.resolve(Paths.Out, `v${version}`);
+	}
+
 	static get MissingTagsPath() {
 		return upath.resolve(Paths.Out, "missing-tags.yaml");
 	}

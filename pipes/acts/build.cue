@@ -69,6 +69,9 @@ import (
     version: string
     _version: version
 
+    env: [string]: string | dagger.#Secret
+    _env: env
+
     _image: #BuildImage & {
         version: _version
         workdir: _workdir
@@ -88,5 +91,6 @@ import (
     _publish: #RunScript & {
         input: _copyBin.output
         name: "publish-bin"
+        env: _env
     }
 }
