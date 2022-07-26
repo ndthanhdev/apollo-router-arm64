@@ -4,9 +4,10 @@ import (
     // "universe.dagger.io/alpine"
     "universe.dagger.io/docker"
     "dagger.io/dagger"
+    "dagger.io/dagger/core"
 )
 
-#BuildVersion: {
+#BuildImage: {
     version: string
 
     workdir: dagger.#FS
@@ -14,7 +15,9 @@ import (
 
     _image: docker.#Dockerfile & {
         source: _workdir
-        dockerfile: path: "./Dockerfile"
+
+        // dockerfile: path: "./Dockerfile"
+        dockerfile: path: "./Mock.Dockerfile"
 
         platforms: ["linux/arm64"]
 
@@ -23,17 +26,18 @@ import (
         }
     }
 
-    ouput: _image
+    output: _image.output
 }
 
-#Binary: {
+#BuildBin: {
+    workdir: dagger.#FS
+    _workdir: workdir
+
     version: string
     _version: version
 
-    workdir: dagger.#FS
-	_workdir: workdir
 
-    _image: #BuildVersion & {
+    _image: #BuildImage & {
         version: _version
         workdir: _workdir
     }
@@ -44,12 +48,11 @@ import (
     }
 
     _prepareVerDir: core.#Copy & {
-        input: _outdir.output.rootfs
-        contents: _outdir.output.rootfs
+        input: _outdir.output
+        contents: _outdir.output
 
-        dest: "/"
+        dest: "/v\(_version)"
     }
-
 
     _verDir: core.#Subdir & {
         input: _prepareVerDir.output
@@ -59,3 +62,31 @@ import (
     output: _verDir.output
 }
 
+#PublishBin: {
+    workdir: dagger.#FS
+    _workdir: workdir
+
+    version: string
+    _version: version
+
+    _image: #BuildImage & {
+        version: _version
+        workdir: _workdir
+    }
+
+    _scriptDeps: #ScriptDeps & {
+        workdir: _workdir
+    }
+
+    _copyBin: docker.#Copy & {
+        input: _scriptDeps.output
+        contents: _image.output.rootfs
+        source: "/router"
+        dest: "/bin"
+    }
+
+    _publish: #RunScript & {
+        input: _copyBin.output
+        name: "publish-bin"
+    }
+}

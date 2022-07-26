@@ -47,13 +47,8 @@ import (
 }
 
 #RunScript: {
-
-    workdir: dagger.#FS
-    _workdir: workdir
-
-    deps: #ScriptDeps & {
-        workdir: _workdir
-    }
+    input: docker.#Image
+    _input: input
 
     name: string
     _name: name
@@ -62,7 +57,7 @@ import (
     _args: args
 
     _run: docker.#Run & {
-        input: deps.output
+        input: _input
         command: {
             name: "zx",
             args: ["./scripts/\(_name).mjs"] + _args
