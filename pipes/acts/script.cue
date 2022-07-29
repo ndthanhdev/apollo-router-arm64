@@ -12,7 +12,7 @@ import (
 	workdir: dagger.#FS
 	_workdir: workdir
 
-    _image: docker.#Build & {
+    _img: docker.#Build & {
         steps: [
             alpine.#Build & {
                 version: "3.16"
@@ -43,7 +43,7 @@ import (
         ]
     }
 
-    output: _image.output
+    output: _img.output
 }
 
 #RunScript: {

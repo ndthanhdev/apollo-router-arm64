@@ -25,11 +25,19 @@ console.log({ armTags });
 
 let missingVers = routerTags.filter((tag) => !armTags.includes(tag));
 
-missingVers = missingVers
-	.filter((tag) => Semver.valid(tag))
-	.filter((tag) => Semver.satisfies(tag, ">=0.9.0"));
+missingVers = missingVers.filter((tag) => Semver.valid(tag));
 
 missingVers = Semver.rsort(missingVers);
+
+console.log("valid", { missingVers });
+
+missingVers = missingVers.filter((tag) => Semver.satisfies(tag, ">=0.9.0"));
+
+const ExcludeVersions = [];
+
+missingVers = missingVers.filter((tag) => !ExcludeVersions.includes(tag));
+
+console.log("excluded", { missingVers });
 
 const nextBuild = missingVers[0];
 

@@ -29,32 +29,35 @@ dagger.#Plan & {
 
     _rootDir: client.filesystem."../"
 
+	_workdir: _rootDir.read.contents
 	_version: client.env.TARGET_VERSION | *"0.11.0"
+	_ghUsername: client.env.GH_USERNAME
+	_ghToken: client.env.GH_TOKEN
 
     actions: {
         buildBin: acts.#BuildBin & {
-            workdir: _rootDir.read.contents
+            workdir: _workdir
 
             version: _version
         }
 
 		publishBin: acts.#PublishBin & {
-			workdir: _rootDir.read.contents
+			workdir: _workdir
 			version: _version
-			ghToken: client.env.GH_TOKEN
+			ghToken: _ghToken
 		}
 
 		publishImage: acts.#PublishImage & {
-			workdir: _rootDir.read.contents
+			workdir: _workdir
 			version: _version
-			ghUsername: client.env.GH_USERNAME
-			ghToken: client.env.GH_TOKEN
+			ghUsername: _ghUsername
+			ghToken: _ghToken
 		}
 
-		daily: {
-			// find version to build
-			// publish bin
-			// publish image
+		publish: acts.#Publish & {
+			workdir: _workdir
+			ghUsername: _ghUsername
+			ghToken: _ghToken
 		}
-    }
+	}
 }
