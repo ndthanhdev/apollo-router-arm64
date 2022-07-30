@@ -18,7 +18,7 @@ export class Paths {
 	}
 
 	static get MetaPath() {
-		return upath.resolve(Paths.Out, "meta.yaml");
+		return upath.resolve(Paths.Out, "meta.json");
 	}
 
 	static get ScriptsDir() {

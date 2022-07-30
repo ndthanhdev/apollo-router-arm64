@@ -2,11 +2,17 @@ package acts
 
 import (
     "dagger.io/dagger"
-    "dagger.io/dagger/core"
-    "encoding/yaml"
+    // "dagger.io/dagger/core"
+    "encoding/json"
     "universe.dagger.io/docker"
     // "strings"
 )
+
+#Meta: {
+    missingVers: [...string]
+    shouldBuild: bool
+    nextBuild: string
+}
 
 
 #PublishAll: {
@@ -28,51 +34,21 @@ import (
         _build: #RunScript & {
             input: _deps.output
             name: "build-meta"
+
+            export: files: "/out/meta.json": string
         }
 
-        output: _build.output
+        // output: _build.output
+
+        contents: _build.export.files."/out/meta.json"
     }
 
-    _readingMeta: {
-        _readFile: core.#ReadFile & {
-            input: _buildMeta.output.rootfs
-            path: "/out/meta.yaml"
-        }
-
-        _debugContent: docker.#Run & {
-            input: _buildMeta.output
-            command: {
-                name: "echo"
-                args: [_readFile.contents]
-            }
-        }
-
-        meta: yaml.Unmarshal(_readFile.contents)
-
-        output: meta
-    }
-
-    _version: _readingMeta.output.nextBuild
-
-    _foundVersion: docker.#Run & {
-        input: _buildMeta.output
-        command: {
-            name: "echo"
-            args: [_version]
-        }
-    }
+    _meta: #Meta & json.Unmarshal(_buildMeta.contents)
 
     _doPublish: {
+        _version: string & _meta.nextBuild
 
-        _donePublish: docker.#Run & {
-            input: _buildMeta.output
-            command: {
-                name: "echo"
-                args: ["start publishing"]
-            }
-        }
-
-        if _version != _|_ {
+        if bool & _meta.shouldBuild {
             _publishBin: #PublishBin & {
                 workdir: _workdir
                 version: _version
@@ -87,9 +63,9 @@ import (
             }
         }
 
-        if _version == _|_ {
+        if !(bool & _meta.shouldBuild) {
             _skipPublish: docker.#Run & {
-                input: _buildMeta.output
+                input: _workdir
                 command: {
                     name: "echo"
                     args: ["No version to build"]

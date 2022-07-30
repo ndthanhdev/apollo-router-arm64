@@ -41,7 +41,11 @@ console.log("excluded", { missingVers });
 
 const nextBuild = missingVers[0];
 
-const fContent = Yaml.stringify({ missingVers, nextBuild });
+const fContent = JSON.stringify({
+	missingVers,
+	shouldBuild: !!nextBuild,
+	nextBuild,
+});
 
 console.log(fContent);
 
