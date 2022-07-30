@@ -5,6 +5,7 @@ import (
     "universe.dagger.io/docker"
     "dagger.io/dagger"
     "dagger.io/dagger/core"
+    "encoding/json"
 )
 
 #BuildImage: {
@@ -126,4 +127,87 @@ import (
             secret: ghToken
         }
     }
+}
+
+
+#PublishAll: {
+    workdir: dagger.#FS
+	_workdir: workdir
+
+    ghUsername: string
+    _ghUsername: ghUsername
+
+    ghToken: dagger.#Secret
+    _ghToken: ghToken
+
+    _buildMeta: {
+        _deps: #ScriptDeps & {
+            workdir: _workdir
+        }
+
+
+        _build: #RunScript & {
+            input: _deps.output
+            name: "build-meta"
+
+            export: files: "/out/meta.json": string
+        }
+
+        // output: _build.output
+
+        contents: _build.export.files."/out/meta.json"
+    }
+
+    _meta: json.Unmarshal(_buildMeta.contents) & {
+        missingVers: [...string]
+        shouldBuild: bool | *false
+        nextBuild?: string
+    }
+
+    _doPublish: {
+
+        _shouldBuild: _meta.shouldBuild
+        _version: _meta.nextBuild
+
+        if _meta.shouldBuild {
+            // "_publishBin": #PublishBin & {
+            //     workdir: _workdir
+            //     version: _version
+            //     ghToken: _ghToken
+            // }
+
+            "_do": docker.#Run & {
+                input: _buildMeta._deps.output
+                command: {
+                    name: "echo"
+                    args: ["Publish bin..."]
+                }
+            }
+        }
+    }
+
+
+    output: true & _meta.shouldBuild
+
+    // _doPublish: {
+    //     _version: string & _meta.nextBuild
+    //     if _meta.shouldBuild {
+    //         _publishImage: #PublishImage & {
+    //             workdir: _workdir
+    //             version: _version
+    //             ghUsername: _ghUsername
+    //             ghToken: _ghToken
+    //         }
+    //     }
+
+    //     if !(bool & _meta.shouldBuild) {
+    //         _skipPublish: docker.#Run & {
+    //             input: _workdir
+    //             command: {
+    //                 name: "echo"
+    //                 args: ["No version to build"]
+    //             }
+    //         }
+    //     }
+    // }
 }
