@@ -11,13 +11,13 @@ import fs from "fs-extra";
 import { getTags } from "./utils/get-tags.mjs";
 import { Paths } from "./utils/paths.mjs";
 
-const RouterRepoUrl = "git@github.com:apollographql/router.git";
+const RouterRepoUrl = "https://github.com/apollographql/router.git";
 
 const routerTags = await getTags(RouterRepoUrl);
 
 console.log({ routerTags });
 
-const ArmRepoUrl = "git@github.com:ndthanhdev/apollo-router-arm64.git";
+const ArmRepoUrl = "https://github.com/ndthanhdev/apollo-router-arm64.git";
 
 const armTags = await getTags(ArmRepoUrl);
 

@@ -19,6 +19,8 @@ dagger.#Plan & {
 			}
 
 			"../out/": write: contents: actions.buildBin.output
+
+			// "../out/": write: contents: actions.publishAll.output
 		}
 		env: {
 			TARGET_VERSION?: string
@@ -54,7 +56,7 @@ dagger.#Plan & {
 			ghToken: _ghToken
 		}
 
-		publish: acts.#Publish & {
+		publishAll: acts.#PublishAll & {
 			workdir: _workdir
 			ghUsername: _ghUsername
 			ghToken: _ghToken

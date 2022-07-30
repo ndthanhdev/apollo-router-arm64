@@ -21,10 +21,10 @@ const flags = [
 	`https://${GH_TOKEN}@github.com/ndthanhdev/apollo-router-arm64.git`,
 
 	"--tag",
-	`v${TARGET_VERSION}`,
+	`${TARGET_VERSION}`,
 
 	"--message",
-	`Publish v${TARGET_VERSION}`,
+	`Publish ${TARGET_VERSION}`,
 
 	"--user",
 	USER,

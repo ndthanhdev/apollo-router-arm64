@@ -2,12 +2,14 @@ package acts
 
 import (
     "dagger.io/dagger"
-    // "dagger.io/dagger/core"
-    // "encoding/yaml"
+    "dagger.io/dagger/core"
+    "encoding/yaml"
+    "universe.dagger.io/docker"
+    // "strings"
 )
 
 
-#Publish: {
+#PublishAll: {
     workdir: dagger.#FS
 	_workdir: workdir
 
@@ -22,40 +24,77 @@ import (
             workdir: _workdir
         }
 
-        input: _deps.output
 
-        #RunScript & {
+        _build: #RunScript & {
+            input: _deps.output
             name: "build-meta"
         }
 
+        output: _build.output
     }
 
-    // _readingMeta: {
-    //     _readFile: core.#ReadFile & {
-    //         input: _buildMeta.output
-    //         path: "/out/meta.yaml"
-    //     }
+    _readingMeta: {
+        _readFile: core.#ReadFile & {
+            input: _buildMeta.output.rootfs
+            path: "/out/meta.yaml"
+        }
 
-    //     meta: yaml.Marshal(_readFile.contents)
+        _debugContent: docker.#Run & {
+            input: _buildMeta.output
+            command: {
+                name: "echo"
+                args: [_readFile.contents]
+            }
+        }
 
-    //     output: meta
-    // }
+        meta: yaml.Unmarshal(_readFile.contents)
 
-    // _version: _readingMeta.output.nextBuild
+        output: meta
+    }
 
-    // if _version {
-    //     _publishBin: #PublishBin & {
-    //         workdir: _workdir
-    //         version: _version
-    //         ghToken: _ghToken
-    //     }
+    _version: _readingMeta.output.nextBuild
 
-    //     _publish: #PublishImage & {
-    //         workdir: _workdir
-    //         version: _version
-    //         ghUsername: _ghUsername
-    //         ghToken: _ghToken
-    //     }
-    // }
+    _foundVersion: docker.#Run & {
+        input: _buildMeta.output
+        command: {
+            name: "echo"
+            args: [_version]
+        }
+    }
 
+    _doPublish: {
+
+        _donePublish: docker.#Run & {
+            input: _buildMeta.output
+            command: {
+                name: "echo"
+                args: ["start publishing"]
+            }
+        }
+
+        if _version != _|_ {
+            _publishBin: #PublishBin & {
+                workdir: _workdir
+                version: _version
+                ghToken: _ghToken
+            }
+
+            _publishImage: #PublishImage & {
+                workdir: _workdir
+                version: _version
+                ghUsername: _ghUsername
+                ghToken: _ghToken
+            }
+        }
+
+        if _version == _|_ {
+            _skipPublish: docker.#Run & {
+                input: _buildMeta.output
+                command: {
+                    name: "echo"
+                    args: ["No version to build"]
+                }
+            }
+        }
+    }
 }

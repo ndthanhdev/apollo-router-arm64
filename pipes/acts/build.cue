@@ -119,7 +119,7 @@ import (
     _push: docker.#Push & {
         image: _image.output
 
-        dest: "ghcr.io/ndthanhdev/apollo-router-arm64:v\(_version)"
+        dest: "ghcr.io/ndthanhdev/apollo-router-arm64:\(_version)"
 
         auth: {
             username: ghUsername
