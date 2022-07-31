@@ -5,3 +5,6 @@ Prebuilt [Apollo Router](https://github.com/apollographql/router) for arm64 arch
 
 - [Binaries](https://github.com/ndthanhdev/apollo-router-arm64/tags)
 - [Docker Image](https://github.com/ndthanhdev/apollo-router-arm64/pkgs/container/apollo-router-arm64)
+
+# References
+- https://github.com/apollographql/router/issues/1192#issuecomment-1180851901
