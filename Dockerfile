@@ -10,7 +10,7 @@ ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
 
 # Build router
 WORKDIR /router
-RUN git clone https://github.com/apollographql/router --depth=1 --branch v$router_version /router
+RUN git clone https://github.com/apollographql/router --depth=1 --branch $router_version /router
 
 # install the toolchain specified by the project
 RUN rustup show
