@@ -27,7 +27,7 @@ let missingVers = routerTags.filter((tag) => !armTags.includes(tag));
 
 missingVers = missingVers.filter((tag) => Semver.valid(tag));
 
-missingVers = Semver.rsort(missingVers);
+missingVers = Semver.sort(missingVers);
 
 console.log("valid", { missingVers });
 
