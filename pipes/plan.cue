@@ -18,30 +18,35 @@ dagger.#Plan & {
 				]
 			}
 
-			"../out/": write: contents: actions.buildBin.output
+			"../out/bin/": write: contents: actions.buildBin.output
 
-			// "../out/": write: contents: actions.publishAll.output
+			"../out/meta/": write: contents: actions.buildMeta.dir
 		}
 		env: {
 			TARGET_VERSION?: string
-			GH_USERNAME: string
-			GH_TOKEN: dagger.#Secret
+			GH_USERNAME?: string
+			GH_TOKEN?: dagger.#Secret
 		}
 	}
 
-    _rootDir: client.filesystem."../"
+	_rootDir: client.filesystem."../"
 
 	_workdir: _rootDir.read.contents
 	_version: client.env.TARGET_VERSION | *"0.11.0"
 	_ghUsername: client.env.GH_USERNAME
 	_ghToken: client.env.GH_TOKEN
 
-    actions: {
-        buildBin: acts.#BuildBin & {
-            workdir: _workdir
+	actions: {
 
-            version: _version
-        }
+		buildMeta: acts.#BuildMeta & {
+			workdir: _workdir
+		}
+
+		buildBin: acts.#BuildBin & {
+				workdir: _workdir
+
+				version: _version
+		}
 
 		publishBin: acts.#PublishBin & {
 			workdir: _workdir
