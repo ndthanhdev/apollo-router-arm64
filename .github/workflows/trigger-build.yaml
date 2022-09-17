@@ -20,20 +20,13 @@ jobs:
         uses: docker/setup-qemu-action@v2
 
       # You need to run `dagger project init` locally before and commit the cue.mod directory to the repository with its contents
-      - name: Publish ARM build
+      - name: Install dagger
         uses: dagger/dagger-for-github@v3
         # See all options at https://github.com/dagger/dagger-for-github
         with:
           version: 0.2
           workdir: pipes
-          # To pin external dependencies, you can use `project update github.com/[package-source]@v[n]`
-          cmds: |
-            project update
-            do publishAll -l=debug --log-format=plain
-        env:
-          # Get one from https://app.netlify.com/user/applications/personal
-          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
-          GH_USERNAME: ndthanhdev
+          install-only: true
       - uses: actions/setup-node@v3
         with:
           node-version: 16
