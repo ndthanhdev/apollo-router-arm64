@@ -24,8 +24,8 @@ dagger.#Plan & {
 		}
 		env: {
 			TARGET_VERSION?: string
-			GH_USERNAME?: string
-			GH_TOKEN?: dagger.#Secret
+			GH_USERNAME: string
+			GH_TOKEN: dagger.#Secret
 		}
 	}
 
