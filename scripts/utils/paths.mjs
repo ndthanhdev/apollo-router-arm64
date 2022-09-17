@@ -5,23 +5,31 @@ export class Paths {
 		return upath.resolve(__dirname, "../");
 	}
 
+	static get PipesPath() {
+		return upath.resolve(this.WorkDir, "pipes");
+	}
+
 	static get Temp() {
-		return upath.resolve(Paths.WorkDir, "temp");
+		return upath.resolve(this.WorkDir, "temp");
 	}
 
 	static get Out() {
-		return upath.resolve(Paths.WorkDir, "out");
+		return upath.resolve(this.WorkDir, "out");
 	}
 
 	static getBinFolder(version) {
-		return upath.resolve(Paths.Out, `v${version}`);
+		return upath.resolve(this.Out, `v${version}`);
+	}
+
+	static get MetaFolder() {
+		return upath.resolve(this.Out, "meta");
 	}
 
 	static get MetaPath() {
-		return upath.resolve(Paths.Out, "meta.json");
+		return upath.resolve(this.MetaFolder, "meta.json");
 	}
 
 	static get ScriptsDir() {
-		return upath.resolve(Paths.WorkDir, "scripts");
+		return upath.resolve(this.WorkDir, "scripts");
 	}
 }

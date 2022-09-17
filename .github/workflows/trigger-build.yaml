@@ -1,6 +1,8 @@
 name: trigger-build
 on:
   workflow_dispatch: {}
+  schedule:
+    - cron: 0 */8 * * * # each 8 hours
 
 # Dagger plan gets configured via client environment variables
 # env:
@@ -28,6 +30,18 @@ jobs:
           cmds: |
             project update
             do publishAll -l=debug --log-format=plain
+        env:
+          # Get one from https://app.netlify.com/user/applications/personal
+          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+          GH_USERNAME: ndthanhdev
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: cd
+        working-directory: ./scripts
+        run: |
+          yarn install
+          yarn zx ./cd.mjs
         env:
           # Get one from https://app.netlify.com/user/applications/personal
           GH_TOKEN: ${{ secrets.ACTION_TOKEN }}

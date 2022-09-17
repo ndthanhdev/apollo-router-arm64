@@ -485,6 +485,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"load-json-file@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "load-json-file@npm:7.0.1"
+  checksum: a560288da6891778321ef993e4bdbdf05374a4f3a3aeedd5ba6b64672798c830d748cfc59a2ec9891a3db30e78b3d04172e0dcb0d4828168289a393147ca0e74
+  languageName: node
+  linkType: hard
+
 "locate-path@npm:^5.0.0":
   version: 5.0.0
   resolution: "locate-path@npm:5.0.0"
@@ -727,6 +734,7 @@ __metadata:
   dependencies:
     fs-extra: ^10.1.0
     gh-pages: ^4.0.0
+    load-json-file: ^7.0.1
     semver: ^7.3.7
     upath: ^2.0.1
     yaml: ^2.1.1

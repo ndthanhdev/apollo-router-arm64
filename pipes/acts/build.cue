@@ -129,6 +129,27 @@ import (
     }
 }
 
+#BuildMeta: {
+    workdir: dagger.#FS
+    _workdir: workdir
+
+    _deps: #ScriptDeps & {
+        workdir: _workdir
+    }
+
+    _build: #RunScript & {
+        input: _deps.output
+        name: "build-meta"
+
+        export: {
+            files: "/out/meta/meta.json": string
+            directories: "/out/meta": dagger.#FS
+        }
+    }
+
+    file: _build.export.files."/out/meta/meta.json"
+    dir: _build.export.directories."/out/meta"
+}
 
 #PublishAll: {
     workdir: dagger.#FS
@@ -140,25 +161,11 @@ import (
     ghToken: dagger.#Secret
     _ghToken: ghToken
 
-    _buildMeta: {
-        _deps: #ScriptDeps & {
-            workdir: _workdir
-        }
-
-
-        _build: #RunScript & {
-            input: _deps.output
-            name: "build-meta"
-
-            export: files: "/out/meta.json": string
-        }
-
-        // output: _build.output
-
-        contents: _build.export.files."/out/meta.json"
+    _buildMeta: #BuildMeta & {
+        workdir: _workdir
     }
 
-    _meta: json.Unmarshal(_buildMeta.contents) & {
+    _meta: json.Unmarshal(_buildMeta.file) & {
         missingVers: [...string]
         shouldBuild: bool | *false
         nextBuild?: string
@@ -181,9 +188,6 @@ import (
     }
 
     // _doPublish: {
-
-
-
     //     if _meta.shouldBuild {
     //         // "_publishBin": #PublishBin & {
     //         //     workdir: _workdir
