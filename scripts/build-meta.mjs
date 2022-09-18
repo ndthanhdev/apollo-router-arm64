@@ -73,9 +73,14 @@ async function buildMeta() {
 
 	console.log("missing", missingVers);
 
-	const ExcludeVersions = [];
+	const ExcludeVersions = new Set([
+		"v0.12.1-alpha-defer",
+		"v0.12.1-alpha-defer2",
+		"v0.12.1-alpha-defer3",
+		"v0.12.1-alpha-defer4",
+	]);
 
-	missingVers = missingVers.filter((tag) => !ExcludeVersions.includes(tag));
+	missingVers = missingVers.filter((tag) => !ExcludeVersions.has(tag));
 
 	console.log("excluded", missingVers);
 
